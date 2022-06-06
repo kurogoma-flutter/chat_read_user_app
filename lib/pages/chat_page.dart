@@ -12,9 +12,10 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   String _chatText = '';
-  TextEditingController _textEditingController = TextEditingController();
+  final TextEditingController _textEditingController = TextEditingController();
 
-  handleChatText(e) {
+  /// [_chatText]の更新
+  _handleChatText(e) {
     setState(() {
       _chatText = e;
     });
@@ -30,7 +31,8 @@ class _ChatPageState extends State<ChatPage> {
     }
   }
 
-  Future<void> postMessage() async {
+  /// （contentコレクションへ追加）＋chatRoomコレクションの更新
+  Future<void> _postMessage() async {
     List<String> initReadUser = [FirebaseAuth.instance.currentUser!.uid];
 
     // 更新処理
@@ -44,9 +46,14 @@ class _ChatPageState extends State<ChatPage> {
         'lastMessageAt': Timestamp.now()
       });
 
-      _textEditingController.clear();
-      _chatText = '';
+      _clearForm();
     }
+  }
+
+  /// 入力フォームのクリア。[_textEditingController],[_chatText]をリセットする
+  void _clearForm() {
+    _textEditingController.clear();
+    _chatText = '';
   }
 
   @override
@@ -61,7 +68,7 @@ class _ChatPageState extends State<ChatPage> {
             style: TextStyle(fontWeight: FontWeight.w400)),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () {
               signOut(context);
             },
@@ -72,12 +79,7 @@ class _ChatPageState extends State<ChatPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'チャットサンプル',
-              style: TextStyle(
-                fontSize: 20,
-              ),
-            ),
+            const Text('チャットサンプル', style: TextStyle(fontSize: 20)),
             Container(
               padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
               margin: const EdgeInsets.symmetric(vertical: 20),
@@ -96,7 +98,7 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 maxLines: 1,
                 onChanged: (value) {
-                  handleChatText(value);
+                  _handleChatText(value);
                 },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -113,19 +115,14 @@ class _ChatPageState extends State<ChatPage> {
               width: 120,
               child: ElevatedButton(
                 onPressed: () async {
-                  await postMessage();
+                  await _postMessage();
                 },
                 style: ElevatedButton.styleFrom(
                   primary: Colors.blueAccent,
                   onPrimary: Colors.white,
                   shape: const StadiumBorder(),
                 ),
-                child: const Text(
-                  '投稿',
-                  style: TextStyle(
-                    fontSize: 24,
-                  ),
-                ),
+                child: const Text('投稿', style: TextStyle(fontSize: 24)),
               ),
             ),
             const SizedBox(height: 20),

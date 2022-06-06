@@ -27,12 +27,12 @@ class MyApp extends StatelessWidget {
             const HomePage(),
       ),
       GoRoute(
-        path: '/chatList', // ベース：認証状態を識別してホーム画面orログインへ遷移させる
+        path: '/chatList',
         builder: (BuildContext context, GoRouterState state) =>
             const ChatListPage(),
       ),
       GoRoute(
-        path: '/room/:roomId', // ベース：タブ指定した場合
+        path: '/room/:roomId',
         builder: (context, state) {
           // パスパラメータの値を取得するには state.params を使用
           final String roomId = state.params['roomId']!;
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       routeInformationParser: router.routeInformationParser,
       routerDelegate: router.routerDelegate,
-      title: 'レビューアプリ',
+      title: 'チャット既読アプリ',
     );
   }
 }
@@ -72,16 +72,13 @@ class _HomePageState extends State<HomePage> {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // ローディング画面などに書き換えても良い
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
           if (snapshot.hasData) {
-            // User が null でなない、つまりサインイン済みのホーム画面へ
             return const ChatListPage();
           } else {
-            // User が null である、つまり未サインインのサインイン画面へ
             return const LoginPage();
           }
         });
